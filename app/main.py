@@ -1,6 +1,6 @@
 from typing import Union, Annotated
-
 from fastapi import FastAPI, Query
+from currency_api.currency_api import currency_api_client
 
 app = FastAPI()
 
@@ -17,3 +17,7 @@ async def currency_converter(currency_from: Annotated[str | None, Query(alias="f
         "to": f'{currency_to}',
         "amount": f'{amount}'
     }
+
+@app.get("/test")
+async def test_currency_api():
+    return currency_api_client.status()
