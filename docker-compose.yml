@@ -1,3 +1,5 @@
+name: "challenge-bravo-lucas"
+
 services:
     db:
         image: mariadb:lts
@@ -20,4 +22,5 @@ services:
 
 networks:
     backend:
+        name: backend
         driver: bridge
