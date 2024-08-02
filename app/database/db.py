@@ -1,4 +1,4 @@
-from models import Currency, CurrencyExchange
+from .models import Currency, CurrencyExchange
 
 #CRUD Endpoints
 

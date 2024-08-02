@@ -1,6 +1,6 @@
 from typing import Union, Annotated
 from fastapi import FastAPI, Query
-from currency_api.currency_api import currency_api_client
+from .currency_api.currency_api import currency_api_client
 
 app = FastAPI()
 
