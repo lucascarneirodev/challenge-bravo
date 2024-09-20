@@ -19,7 +19,7 @@ services:
             MARIADB_ROOT_PASSWORD: "${MARIADB_ROOT_PASSWORD}"
             CURRENCY_API_KEY2: "${CURRENCY_API_KEY2}"
     db:
-        image: mariadb:lts
+        image: mariadb:11.4
         restart: always
         environment:
             MARIADB_USER: "${MARIADB_USER}"
@@ -28,6 +28,8 @@ services:
             MARIADB_ROOT_PASSWORD: "${MARIADB_ROOT_PASSWORD}"
         networks:
             - backend
+volumes:
+          - mariadbdata:/var/lib/mysql
 
     adminer:
         image: adminer
@@ -39,6 +41,7 @@ services:
 
 volumes:
     api-data:
+mariadbdata:
 
 networks:
     backend:
