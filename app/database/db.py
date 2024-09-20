@@ -46,7 +46,18 @@ def create_currency_exchange(currency_exchange: CurrencyExchange) -> CurrencyExc
     CurrencyExchange: The created currency exchange rate. If the currency exchange rate already exists, returns None.
 
     '''
-    pass
+    new_currency_exchange = CurrencyExchange(
+        base_currency_code=currency_exchange.base_currency_code,
+        foreign_currency_code=currency_exchange.foreign_currency_code,
+        value=currency_exchange.value
+    )
+
+    with Session(engine) as session:
+        session.add(new_currency_exchange)
+        session.commit()
+        session.refresh(new_currency_exchange)
+        return new_currency_exchange
+
 
 #TODO
 def create_currency(currency: Currency) -> Currency | None:
@@ -59,21 +70,48 @@ def create_currency(currency: Currency) -> Currency | None:
     Returns:
     Currency: The created currency. If the currency already exists, returns None.
     '''
-    pass
+    new_currency = Currency(
+        symbol=currency.symbol,
+        symbol_native=currency.symbol_native,
+        decimal_digits=currency.decimal_digits,
+        rounding=currency.rounding,
+        code=currency.code,
+        name=currency.name,
+        name_plural=currency.name_plural,
+        currency_type=currency.currency_type,
+        countries=currency.countries
+    )
+    
+    currency_exists = read_currency(currency_code=currency.code)
+    
+    if not currency_exists:
+      with Session(engine) as session:
+          session.add(new_currency)
+          session.commit()
+          session.refresh(new_currency)
+          return new_currency
+    else:
+        return None
 
 # Read
 #TODO
-def read_currency(currency_symbol: str) -> Currency | None:
+def read_currency(currency_code: str) -> Currency | None:
     '''
     Search and return a currency from the database defined by the currency symbol.
 
     Args:
-    currency_symbol (str): The currency symbol of the currency to be searched. Example: 'BRL'
+    currency_code (str): The currency symbol of the currency to be searched. Example: 'BRL'
 
     Returns:
     Currency: The currency found. If the currency does not exist, returns None.
     '''
-    pass
+    with Session(engine) as session:
+        statement = select(Currency).where(Currency.code == currency_code)
+        try:
+          result = session.exec(statement).one()
+        except NoResultFound:
+          return None
+        return result
 
 #TODO
 def read_all_currencies() -> list[Currency] | None:
@@ -83,7 +121,13 @@ def read_all_currencies() -> list[Currency] | None:
     Returns:
     A list of currencies in the database. If no currency is found, returns None.
     '''
-    pass
+    with Session(engine) as session:
+        statement = select(Currency)
+        try:
+          results = session.exec(statement).all()
+        except NoResultFound:
+          return None
+        return results
 
 #TODO
 def read_currency_exchange(base_currency_code: str, foreign_currency_code: str) -> CurrencyExchange | None:
@@ -101,7 +145,13 @@ def read_currency_exchange(base_currency_code: str, foreign_currency_code: str) 
     CurrencyExchange: The latest CurrencyExchange object. If no data is found, returns None.
     '''
 
-    pass
+    with Session(engine) as session:
+        statement = select(CurrencyExchange).where(CurrencyExchange.base_currency_code == base_currency_code).where(CurrencyExchange.foreign_currency_code == foreign_currency_code)
+        try:
+          result = session.exec(statement).one()
+        except NoResultFound:
+          return None
+        return result
 
 #TODO
 def read_all_currency_exchanges(base_currency_code: str, foreign_currency_code: str) -> list[CurrencyExchange] | None:
@@ -193,3 +243,7 @@ def delete_currency_exchange_by_id(currency_exchange_id: str) -> CurrencyExchang
     CurrencyExchange: The currency exchange rate that was deleted. If the currency exchange rate does not exist, returns None.
     '''
     pass
+
+
+if __name__ == "__main__":
+    create_db_and_tables(engine)
