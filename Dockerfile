@@ -11,4 +11,5 @@ RUN apt install -y libmariadb3 libmariadb-dev
 
 #Copy App code and RUN
 COPY ./app /code/app
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "80"]
+#CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "80"]
+CMD ["fastapi", "run"]
