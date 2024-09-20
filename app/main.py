@@ -1,9 +1,11 @@
 from typing import Union, Annotated
-from fastapi import FastAPI, Query
-from .currency_api.currency_api import currency_api_client
+from database import db
 
 app = FastAPI()
 
+@app.on_event("startup")
+def on_startup():
+    db.create_db_and_tables()
 
 @app.get("/")
 def read_root():

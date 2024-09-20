@@ -1,4 +1,30 @@
+import os
+from sqlmodel import SQLModel, create_engine, Session, select
+from sqlalchemy import URL
+from sqlalchemy.exc import NoResultFound
+from dotenv import load_dotenv, find_dotenv
 from .models import Currency, CurrencyExchange
+
+load_dotenv(find_dotenv(raise_error_if_not_found=False))
+
+# Create database connection URL for Database Engine (SQLAlchemy)
+url_object = URL.create(
+    "mariadb+mariadbconnector",
+    username=os.environ["MARIADB_USER"],
+    password=os.environ["MARIADB_PASSWORD"],  # plain (unescaped) text
+    host="db",
+    database=os.environ["MARIADB_DATABASE"],
+)
+
+engine = create_engine(url_object, echo=True)
+
+# CREATE DB AND TABLES
+def create_db_and_tables():
+    '''
+    Creates the database and tables using the engine created on the database.db module.
+    '''
+    SQLModel.metadata.create_all(engine)
+
 
 #CRUD Endpoints
 
