@@ -14,6 +14,7 @@ services:
         networks:
             - backend
         environment:
+            EXPIRATION_TIME: "${EXPIRATION_TIME}"
             MARIADB_USER: "${MARIADB_USER}"
             MARIADB_PASSWORD: "${MARIADB_PASSWORD}"
             MARIADB_DATABASE: "${MARIADB_DATABASE}"
