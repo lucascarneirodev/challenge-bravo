@@ -9,6 +9,7 @@ app = FastAPI()
 @app.on_event("startup")
 def on_startup():
     db.create_db_and_tables()
+    db.load_db()
 
 @app.get("/")
 def read_root():

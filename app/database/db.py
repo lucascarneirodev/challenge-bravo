@@ -266,6 +266,64 @@ def delete_currency_exchange_by_id(currency_exchange_id: str) -> CurrencyExchang
     '''
     pass
 
+# initialize the database (test)
+def load_db():
+    '''
+    Load the database with test data.
+    '''
+    test_currency = Currency(
+        symbol="R$",
+        symbol_native="R$",
+        decimal_digits=4,
+        rounding=0,
+        code="BRL",
+        name="Brazilian Real",
+        name_plural="Brazilian reais",
+        currency_type="fiat",
+        countries=["BR"]
+    )
+    second_test_currency = Currency(
+        symbol="$",
+        symbol_native="$",
+        decimal_digits=4,
+        rounding=0,
+        code="USD",
+        name="US Dollar",
+        name_plural="US dollars",
+        currency_type="fiat",
+        countries=["US"]
+    )
+    third_test_currency = Currency(
+        symbol="€",
+        symbol_native="€",
+        decimal_digits=4,
+        rounding=0,
+        code="EUR",
+        name="Euro",
+        name_plural="euros",
+        currency_type="fiat",
+        countries=["EU"]
+    )
+    create_currency(test_currency)
+    create_currency(second_test_currency)
+    create_currency(third_test_currency)
+
+    test_currency_exchange = CurrencyExchange(
+        currency_code="BRL",
+        value=5.5143
+    )
+    second_test_currency_exchange = CurrencyExchange(
+        currency_code="USD",
+        value=1.0
+    )
+    third_test_currency_exchange = CurrencyExchange(
+        currency_code="EUR",
+        value=0.8958
+    )
+    create_currency_exchange(test_currency_exchange)
+    create_currency_exchange(second_test_currency_exchange)
+    create_currency_exchange(third_test_currency_exchange)
+   
 
 if __name__ == "__main__":
     create_db_and_tables(engine)
