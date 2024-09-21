@@ -3,6 +3,7 @@ from fastapi import FastAPI, Query, HTTPException
 from currency_api.currency_api import currency_api_client
 from database.models import Currency, CurrencyExchange
 from database import db
+from decimal import Decimal
 
 app = FastAPI()
 
@@ -17,12 +18,24 @@ def read_root():
 
 # Endpoint converting a currency to another
 @app.get("/convert/")
-async def currency_converter(currency_from: Annotated[str | None, Query(alias="from")] = None, currency_to: Annotated[str | None, Query(alias="to")] = None, amount: float = 1.00):
-    return {
-        "from": f'{currency_from}',
-        "to": f'{currency_to}',
-        "amount": f'{amount}'
-    }
+async def currency_converter(currency_from: Annotated[str | None, Query(alias="from")] = None, currency_to: Annotated[str | None, Query(alias="to")] = None, amount: Decimal = 1.00):
+    value_currency_from = db.read_currency_exchange(currency_from)
+    value_currency_to = db.read_currency_exchange(currency_to)
+    if value_currency_from and value_currency_to:
+        converted_amount = amount * (1/value_currency_from.value * value_currency_to.value)
+        return {
+            "from": f'{currency_from}',
+            "to": f'{currency_to}',
+            "amount": f'{amount}',
+            "converted_amount": f'{converted_amount}'
+        }
+    else:
+        return {
+            "from": f'{currency_from}',
+            "to": f'{currency_to}',
+            "amount": f'{amount}',
+            "converted_amount": "Currency not found"
+        }
 
 @app.get("/test")
 async def test_currency_api():
@@ -45,7 +58,6 @@ async def add_currency(currency: Currency):
     else:
         raise HTTPException(status_code=400, detail="Currency already exists!")
     
-
 
 @app.get("/currency/find/{currency_code}", response_model=Currency)
 def get_currency(currency_code: str):
