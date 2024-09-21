@@ -47,8 +47,7 @@ def create_currency_exchange(currency_exchange: CurrencyExchange) -> CurrencyExc
 
     '''
     new_currency_exchange = CurrencyExchange(
-        base_currency_code=currency_exchange.base_currency_code,
-        foreign_currency_code=currency_exchange.foreign_currency_code,
+        currency_code=currency_exchange.currency_code,
         value=currency_exchange.value
     )
 
@@ -130,7 +129,7 @@ def read_all_currencies() -> list[Currency] | None:
         return results
 
 #TODO
-def read_currency_exchange(base_currency_code: str, foreign_currency_code: str) -> CurrencyExchange | None:
+def read_currency_exchange(currency_code: str) -> CurrencyExchange | None:
     '''
     Search and return the latest currency exchange rates from the database.
     A CurrencyExchange object is defined by the combination of the currency codes (base_currency_code + foreign_currency_code).
@@ -154,7 +153,7 @@ def read_currency_exchange(base_currency_code: str, foreign_currency_code: str) 
         return result
 
 #TODO
-def read_all_currency_exchanges(base_currency_code: str, foreign_currency_code: str) -> list[CurrencyExchange] | None:
+def read_all_currency_exchanges() -> list[CurrencyExchange] | None:
     '''
     Search and return all historical data for currency exchange rates from the database.
     A CurrencyExchange object is defined by the combination of the currency codes (base_currency_code + foreign_currency_code).
