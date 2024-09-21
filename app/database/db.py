@@ -1,4 +1,5 @@
 import os
+from datetime import datetime, timedelta, timezone
 from sqlmodel import SQLModel, create_engine, Session, select
 from sqlalchemy import URL
 from sqlalchemy.exc import NoResultFound
@@ -145,12 +146,28 @@ def read_currency_exchange(currency_code: str) -> CurrencyExchange | None:
     '''
 
     with Session(engine) as session:
-        statement = select(CurrencyExchange).where(CurrencyExchange.base_currency_code == base_currency_code).where(CurrencyExchange.foreign_currency_code == foreign_currency_code)
+        
+        # Get the current time in UTC (timezone-aware)
+        current_time = datetime.now(timezone.utc)
+
+        # Example of getting the time 30 minutes ago (still timezone-aware)
+        time_limit = current_time - timedelta(minutes=int(os.environ['EXPIRATION_TIME']))
+        
+        # Query the database for records within the expiration time, ordered by date descending
+        statement = (
+            select(CurrencyExchange)
+            .where(CurrencyExchange.date > time_limit, CurrencyExchange.currency_code == currency_code)
+            .order_by(CurrencyExchange.date.desc())  # Order by date in descending order
+            .limit(1)  # Limit the results to 1 (latest one)
+        )
+        
+        # Execute the query
         try:
-          result = session.exec(statement).one()
+          latest_currency_exchange = session.exec(statement).first()
         except NoResultFound:
-          return None
-        return result
+          latest_currency_exchange = None
+
+        return latest_currency_exchange
 
 #TODO
 def read_all_currency_exchanges() -> list[CurrencyExchange] | None:
@@ -168,7 +185,13 @@ def read_all_currency_exchanges() -> list[CurrencyExchange] | None:
     list[CurrencyExchange]: A list of CurrencyExchange objects. If no historical data is found, returns None.
 
     '''
-    pass
+    with Session(engine) as session:
+        statement = select(CurrencyExchange)
+        try:
+          results = session.exec(statement).all()
+        except NoResultFound:
+          return None
+        return results
 
 # Update
 #TODO

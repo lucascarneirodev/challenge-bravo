@@ -53,7 +53,23 @@ def get_currency(currency_code: str):
         return result
     else:
         raise HTTPException(status_code=404, detail="Currency not found")
+
+@app.get("/exchange/", response_model=list[CurrencyExchange])
+def get_exchanges():
+    results = db.read_all_currency_exchanges()
+    if results:
+        return results
+    else:
+        raise HTTPException(status_code=404, detail="No Exchanges found!")
     
+@app.get("/exchange/find/{currency_code}", response_model=CurrencyExchange)
+def get_exchange(currency_code: str):
+    result = db.read_currency_exchange(currency_code)
+    if result:
+        return result
+    else:
+        raise HTTPException(status_code=404, detail="Exchange not found")
+
 @app.post("/exchange/add", response_model=CurrencyExchange)
 def add_exchange(currency_exchange: CurrencyExchange):
     result = db.create_currency_exchange(currency_exchange)
